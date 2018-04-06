@@ -1,0 +1,98 @@
+{% extends "project/base_site.html" %}
+{% load i18n %}
+{% block title %} {% trans "Projects" %} {% endblock title %}
+
+{% block stylesheets %}
+{{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+  <div class="right_col" role="main">
+    <div class="">
+   <!-- top menu bar -->
+   {% include "project/project_nave.html" %}
+
+      <div class="clearfix"></div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="x_panel">
+              <div class="x_title">
+                <h2>{% trans "Team members" %} </h2>
+                      <ul class="nav navbar-right panel_toolbox">
+                  <a href="{{request.META.HTTP_REFERER}}" >  <button type="button" class="btn btn-primary">{{ _('Back')}} <i class="fa fa-angle-double-left"></i> </button></a>
+             
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+              {% for message in messages %}
+                <div style="font-size: 16px;" class="alert {{ message.tags }} alert-dismissible" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                  {{ message }}
+                </div>
+              {% endfor %}
+              <!-- start project list -->
+              <table class="table table-striped projects">
+                <thead>
+                  <tr>
+                    <th style="width: 1%">#</th>
+                    <th>{% trans "Employee Name" %}</th>
+                    <th>{% trans "Department" %}</th>
+                    <th>{% trans "Job title" %}</th>
+                    <th>{% trans "Total tasks" %}</th>
+                    <th>{% trans "tasks new" %}</th>
+                    <th>{% trans "Tasks inprogress" %}</th>
+                    <th>{% trans "Tasks done" %}</th>
+                    <th>{% trans "Tasks closed" %}</th>
+                    <th>{% trans "Tasks cancelled" %}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for data in all_emp %}
+                  <tr>
+                    <td>#</td>
+                    <td>
+                      {{data.employeename}}
+                    </td>
+                    <td>  {{data.deptname}}</td>
+                    <td>
+                      {{data.jobtitle}}
+                    </td>
+                    <td class="project_progress">
+                      {{data.totaltask}}
+                    </td>
+                    <td>
+                        {{data.new}}
+                    </td>
+                    <td>
+                        {{data.inprogress}}
+                    </td>
+                    <td>
+                        {{data.done}}
+                    </td>
+                    <td>
+                        {{data.closed}}
+                    </td>
+                    <td>
+                        {{data.cancelled}}
+                    </td>
+                    </tr>
+                  {% endfor %}
+
+          </tbody>
+              </table>
+              <!-- end project list -->
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+{% endblock javascripts %}
