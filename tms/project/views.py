@@ -494,17 +494,11 @@ def ProjectTask(request,pk,task_status=None):
     current_url ="ns-project:" + resolve(request.path_info).url_name
     empid = request.session.get('EmpID')
     project_detail= get_object_or_404(Project,id__exact=pk) 
-        
-
-
     project_list= _get_internal_external_projects(request)
-
     task_list= Task.objects.all().filter(
          Q(project__id__exact=pk)&
         ( Q(assignedto__empid__exact = empid) | Q(createdby__exact=empid) |  Q(project__createdby__empid__exact=empid)  |  Q(project__delegationto__empid__exact=empid))
          ).order_by('startdate')
-
-   
     
     if task_status=="all":
          task_list= task_list
@@ -533,7 +527,6 @@ def ProjectTask(request,pk,task_status=None):
     elif task_status=="assignedtodept":
          task_list= task_list.filter(departement__exact= request.session['DeptCode'])
 
-
     paginator = Paginator(task_list,10) # Show 5 contacts per page
     page = request.GET.get('page')
     try:
@@ -544,7 +537,6 @@ def ProjectTask(request,pk,task_status=None):
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
         _plist = paginator.page(paginator.num_pages)
-
 
     context = {'tasks':_plist,'project_detail':project_detail,'project_list':project_list,'current_url':current_url,'empDict':empDict,'dptDict':dptDict}
     return render(request, 'project/tasks.html', context)
@@ -561,8 +553,6 @@ def ProjectTaskDetail(request,projectid,taskid):
     project_list=  _get_internal_external_projects(request)
     current_url ="ns-project:project-task"
     project_detail= get_object_or_404(Project,pk=projectid)
-
-
 
     try:
         assignToEmp=Employee.objects.get(empid__exact=task_detail.assignedto);
@@ -616,7 +606,6 @@ def updateStartDate(request,pk):
             _obj.status="InProgress"
             _obj.lasteditdate=datetime.now()
             _obj.lasteditby=empObj
-
             _obj.save()
             #add to history
             update_change_reason(_obj, _("Update start date for task by")+request.session['EmpName']+",    <i class=\"fa fa-comment\"></i>  " + form.cleaned_data['notes'])
@@ -870,17 +859,32 @@ def projectFlowUp(request):
 
 @login_required
 def ProjectTeam(request,project_id):
+    from  django.db.models import Count, Case, When, IntegerField ,F
     empid=request.session.get('EmpID')
     project_detail= get_object_or_404(Project,id__exact=project_id) 
 #     try:
 #         project_detail=Project.objects.get(Q(id__excat=project_id) and Q(createdby__exact=empid or delgationto__exact==empid))
 #     except:
 #          raise Http404("No project match your query")
-    
+    #projet top nave
     project_list=  _get_internal_external_projects( request)
+    
     all_emp = VStatisticstaskdata.objects.filter(projectid = project_id)
+    
+    members = Task.objects.filter(project__id__exact = project_id).values(
+        'assignedto__empname','assignedto__deptname','assignedto__jobtitle','departement__deptname').annotate(
+                                totaltask= Count(id)).annotate(
+                                    new = Count(Case(When(status ='New' ,then=F("id")),output_field=IntegerField())),
+                                    inProgress = Count(Case(When(status ='InProgress' ,then=F("id")),output_field=IntegerField())),
+                                    done = Count(Case(When(status ='Done' ,then=F("id")),output_field=IntegerField())),
+                                    hold = Count(Case(When(status ='Hold' ,then=F("id")),output_field=IntegerField())),
+                                    cancelled = Count(Case(When(status ='Cancelled' ,then=F("id")),output_field=IntegerField())),
+                                    closed = Count(Case(When(status ='Closed' ,then=F("id")),output_field=IntegerField()))).order_by()
+    
+    
+    
     current_url ="ns-project:" + resolve(request.path_info).url_name
-    context={'all_emp':all_emp,'project_detail':project_detail,'project_list':project_list,'current_url':current_url}
+    context={'members': members,'all_emp':all_emp,'project_detail':project_detail,'project_list':project_list,'current_url':current_url}
     return render(request, 'project/project_team.html', context)
 
 @login_required
@@ -1419,10 +1423,13 @@ def DashboardEmployee(request,empid=None):
     context = {"task_employee":task_employee,'employee':employee,'kpi':kpi,'pie_tasks':pie_tasks}
     return render(request, 'project/dashboard_employee.html', context)
 #@login_required
+
+@login_required
 def emp_task(empid):
     tasks = Task.objects.filter( Q(assignedto__empid__exact = empid) & ~Q(status ='Closed'))
     return tasks
-#@login_required
+
+@login_required
 def dept_task_indicators(request,dept_code,start_date,end_date):
     empid=request.session['EmpID']
     dept_data = get_object_or_404(Department,deptcode__exact=dept_code)

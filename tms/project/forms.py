@@ -25,36 +25,6 @@ class BootstrapAuthenticationForm(AuthenticationForm):
                                    'class': 'form-control has-feedback-left',
                                    'placeholder':_('Password')}))
 
-class AddNewSheet(forms.Form):
-    TaskDesc = forms.CharField(label=_("Task Descreption"),
-               widget=forms.TextInput({'class': 'form-control','placeholder': 'وصف المهمة كامل'}))
-
-    TaskType = forms.ChoiceField(choices=(('M', _('Master')), ('H', _('Help'))),label=_("Task type"),
-                    widget=forms.Select({'class': 'form-control','placeholder':'task'}))
-    Duration = forms.IntegerField(label=_("Duration"),
-               widget=forms.NumberInput({'class': 'form-control','placeholder':'0'}))
-
-UpdateSheet = modelformset_factory(Sheet, fields=('taskdesc', 'tasktype', 'duration'))
-
-class FilterSheet(forms.Form):
-    tasktype = forms.ChoiceField(choices=(("", _('')),('M', _('Master')), ('H', _('Help'))),label=_("Task type"),required=False,
-                    widget=forms.Select({'class': 'form-control','placeholder':'task'}))
-    tasksubmitted= forms.ChoiceField(choices=(
-        ("", _('')),
-        ('0', _('New')),
-        ('1', _('submitted')),
-        ('2', _('not submitted')),
-    ),required=False,label=_("Status submitted"),widget=forms.Select({'class': 'form-control cust','placeholder':'task'}))
-    taskstatus= forms.ChoiceField(choices=(
-    ("", _('')),
-        ('1', _('in progres')),
-        ('2', _('Done')),
-        ('3', _('Ignore')),
-    ),required=False,label=_("Status task"),widget=forms.Select({'class': 'form-control','placeholder':'task'}))
-
-class SheetForm(ModelForm):
-    model = Sheet
-
 class ProjectForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)
@@ -294,8 +264,6 @@ class TaskCancelForm(forms.Form):
 class TaskPauseForm(forms.Form):
        note = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'size': '40','required': 'True'}),required=True, max_length=500, error_messages={'required': 'note'},label=_('Note'))
 
-
-
 class FollowupModelChoiceField(ModelChoiceField):
 
     def label_from_instance(self, obj):
@@ -339,6 +307,7 @@ class UploadFile(ModelForm):
             'filepath': _('Choose File'),
 
         }
+
 class AddDelegation(ModelForm):
     employee = EmployeeList(queryset=Employee.objects.all(),to_field_name="empid",label=_("Delegation to"), empty_label=_("Nothing"),required=True,widget=forms.Select(attrs={'class': 'chosen form-control'} ))
     class Meta:
@@ -365,9 +334,11 @@ class AddDelegation(ModelForm):
 class ProjectModelChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.name
+
 class ApfDeptViewModelChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.dept_name
+
 class ReportForm(forms.Form):
     RERPORT_TYPE_CHOICES = (('project', _('Project Summary')),('assignedto', _('Assignation')),('status', _('Status')),)
     departement = ApfDeptViewModelChoiceField(queryset=ApfDeptView.objects.none(), to_field_name="dept_code",empty_label=_('Select Departement'),widget=forms.Select(attrs={'class': 'chosen  form-control col-md-3',} ),error_messages={'required': _('Please Sealect Departement')},required=False)
