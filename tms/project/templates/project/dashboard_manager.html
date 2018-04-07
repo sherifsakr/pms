@@ -1,5 +1,6 @@
 {% extends "project/base_site.html" %}
 {% load i18n %}
+{% load cache %}
 {% block title %} Dashboard 1 {% endblock title %}
 {% block stylesheets %}
 {{ block.super }}
@@ -109,6 +110,7 @@
                     <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
 
 					<!-- start user tasks -->
+					  {% cache 500 open_tasks open_projects %}   
                       <table class="data table table-striped no-margin" id="open_tasks">
                         <thead>
                           <tr>
@@ -177,6 +179,7 @@
                          {% endfor%}
                           </tbody>
                       </table>
+                
                       <!-- end user projects -->
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
@@ -254,7 +257,7 @@
                           {% endfor %}
                                </tbody>
                       </table>
-                   
+                       {% endcache %}
                       <!-- end user projects -->
 
                     </div>

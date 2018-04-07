@@ -26,11 +26,11 @@ from simple_history.utils import update_change_reason
 from idlelib.debugobj import _object_browser
 from django.forms.models import modelformset_factory
 from unittest.case import expectedFailure
-from django.core.mail import send_mail
 from django.template.context_processors import request
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string, get_template
-from django.core.mail import EmailMessage
+from django.core.mail import send_mail, EmailMessage
+
 
 def loginfromdrupal(request, email,signature,time):
     from django.contrib.auth import login
@@ -862,15 +862,8 @@ def ProjectTeam(request,project_id):
     from  django.db.models import Count, Case, When, IntegerField ,F
     empid=request.session.get('EmpID')
     project_detail= get_object_or_404(Project,id__exact=project_id) 
-#     try:
-#         project_detail=Project.objects.get(Q(id__excat=project_id) and Q(createdby__exact=empid or delgationto__exact==empid))
-#     except:
-#          raise Http404("No project match your query")
     #projet top nave
     project_list=  _get_internal_external_projects( request)
-    
-    all_emp = VStatisticstaskdata.objects.filter(projectid = project_id)
-    
     members = Task.objects.filter(project__id__exact = project_id).values(
         'assignedto__empname','assignedto__deptname','assignedto__jobtitle','departement__deptname').annotate(
                                 totaltask= Count(id)).annotate(
@@ -881,10 +874,8 @@ def ProjectTeam(request,project_id):
                                     cancelled = Count(Case(When(status ='Cancelled' ,then=F("id")),output_field=IntegerField())),
                                     closed = Count(Case(When(status ='Closed' ,then=F("id")),output_field=IntegerField()))).order_by()
     
-    
-    
     current_url ="ns-project:" + resolve(request.path_info).url_name
-    context={'members': members,'all_emp':all_emp,'project_detail':project_detail,'project_list':project_list,'current_url':current_url}
+    context={'members': members,'project_detail':project_detail,'project_list':project_list,'current_url':current_url}
     return render(request, 'project/project_team.html', context)
 
 @login_required
