@@ -498,7 +498,7 @@ def ProjectTask(request,pk,task_status=None):
     task_list= Task.objects.all().filter(
          Q(project__id__exact=pk)&
         ( Q(assignedto__empid__exact = empid) | Q(createdby__exact=empid) |  Q(project__createdby__empid__exact=empid)  |  Q(project__delegationto__empid__exact=empid))
-         ).order_by('startdate')
+         ).order_by('-startdate')
     
     if task_status=="all":
          task_list= task_list
@@ -522,7 +522,7 @@ def ProjectTask(request,pk,task_status=None):
          task_list= task_list.filter(status__exact='Hold')
     elif task_status=="delayed":
          date = datetime.today().strftime('%Y-%m-%d')
-         task_list= task_list.filter(enddate__lt = date)
+         task_list= task_list.filter(Q(enddate__lt = date) & ~Q(status__exact='Done'))
          # task_list= task_list.filter(enddate__lt = datetime.today())
     elif task_status=="assignedtodept":
          task_list= task_list.filter(departement__exact= request.session['DeptCode'])

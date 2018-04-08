@@ -48,11 +48,12 @@
                     <th>{% trans "Department" %}</th>
                     <th>{% trans "Job title" %}</th>
                     <th>{% trans "Total tasks" %}</th>
-                    <th>{% trans "tasks new" %}</th>
-                    <th>{% trans "Tasks inprogress" %}</th>
-                    <th>{% trans "Tasks done" %}</th>
-                    <th>{% trans "Tasks closed" %}</th>
-                    <th>{% trans "Tasks cancelled" %}</th>
+                    <th>{% trans "New" %}</th>
+                    <th>{% trans "Inprogress" %}</th>
+                    <th>{% trans "Done" %}</th>
+                    <th>{% trans "Hold" %}</th>
+                    <th>{% trans "Closed" %}</th>
+                    <th>{% trans "Cancelled" %}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -89,6 +90,9 @@
                     </td>
                     <td>
                         {{member.done}}
+                    </td>
+                     <td>
+                        {{member.hold}}
                     </td>
                     <td>
                         {{member.closed}}
