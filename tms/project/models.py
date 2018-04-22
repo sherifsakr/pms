@@ -221,10 +221,10 @@ class Task(models.Model):
     closeddate = models.DateTimeField(db_column='ClosedDate', blank=True, null=True)  # Field name made lowercase.
     closereson = models.CharField(db_column='CloseReson', max_length=500, blank=True, null=True)  # Field name made lowercase.
     deleted = models.IntegerField(db_column='Deleted', blank=True, null=True)  # Field name made lowercase.
-    createdby = models.ForeignKey('Employee',to_field='empid',related_name='Emp4',db_column='CreatedBy', blank=True, null=True)  # Field name made lowercase.
+    createdby = models.ForeignKey('Employee',to_field='empid',related_name='Emp4',db_column='CreatedBy', on_delete=models.SET_NULL, blank=True, null=True)  # Field name made lowercase.
     createddate = models.DateTimeField(db_column='CreatedDate', blank=True, null=True)  # Field name made lowercase.
     lasteditdate = models.DateTimeField(db_column='LastEditDate', blank=True, null=True)  # Field name made lowercase.
-    lasteditby =models.ForeignKey('Employee',to_field='empid',related_name='Task_Employee_LastEditBy',db_column='LastEditBy', blank=True, null=True)
+    lasteditby =models.ForeignKey('Employee',to_field='empid',related_name='Task_Employee_LastEditBy',db_column='LastEditBy', on_delete=models.SET_NULL, blank=True, null=True)
 
     history = HistoricalRecords()
     class Meta:
@@ -313,9 +313,9 @@ def Media_delete(sender, instance, **kwargs):
 
 class Delegation(models.Model):
     id = models.AutoField(db_column='id', primary_key=True)  # Field name made lowercase.
-    managerid = models.ForeignKey('Employee', db_column='ManagerId', to_field='empid',related_name='Emp1',blank=True, null=True)  # Field name made lowercase.
-    deptcode = models.ForeignKey('Department',to_field='deptcode', db_column='DeptCode', max_length=10, blank=True, null=True)  # Field name made lowercase.
-    authorized = models.ForeignKey('Employee',to_field='empid',related_name='Emp2', db_column='Authorized', blank=True, null=True)  # Field name made lowercase.
+    managerid = models.ForeignKey('Employee', db_column='ManagerId', to_field='empid',related_name='Emp1', on_delete=models.SET_NULL,blank=True, null=True)  # Field name made lowercase.
+    deptcode = models.ForeignKey('Department',to_field='deptcode', db_column='DeptCode', on_delete=models.SET_NULL, max_length=10, blank=True, null=True)  # Field name made lowercase.
+    authorized = models.ForeignKey('Employee',to_field='empid',related_name='Emp2', db_column='Authorized', on_delete=models.SET_NULL, blank=True, null=True)  # Field name made lowercase.
     deptauthcode = models.CharField(db_column='DeptAuthCode', max_length=10, blank=True, null=True)  # Field name made lowercase.
     start = models.DateTimeField(db_column='Start', blank=True, null=True)  # Field name made lowercase.
     end = models.DateTimeField(db_column='End', blank=True, null=True)  # Field name made lowercase.

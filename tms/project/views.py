@@ -12,7 +12,7 @@ from django.forms import BaseModelFormSet
 from datetime import datetime , timedelta
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q , Count ,Avg
-from django.core.urlresolvers import reverse
+from django.urls import reverse ,resolve
 from django.contrib import messages
 from django.contrib.auth.models import User,Group
 from django.contrib.auth.decorators import permission_required
@@ -21,7 +21,7 @@ from .filters import SheetFilter
 from django.template.loader import  render_to_string
 from django.http import JsonResponse
 from django.views.generic.list import ListView
-from django.core.urlresolvers import resolve
+
 from simple_history.utils import update_change_reason
 from idlelib.debugobj import _object_browser
 from django.forms.models import modelformset_factory
